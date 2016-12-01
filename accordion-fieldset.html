@@ -1,0 +1,164 @@
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../iron-iconset-svg/iron-iconset-svg.html">
+<link rel="import" href="../paper-styles/color.html">
+<link rel="import" href="accordion-fieldset-icons.html">
+<link rel="import" href="accordion-fieldset-animation.html">
+<!--
+`accordion-fieldset`
+ Basic anngular style fieldset with accordion behaviour.
+
+@demo demo/index.html
+-->
+
+
+<dom-module id="accordion-fieldset">
+<template>
+  <style type="text/css" is="custom-style">
+  :root{
+    --ac-fs-layout-main: {
+      margin: 10px 0 0 0;
+      padding: 0;
+      border: 1px solid;
+      position: relative;
+    };
+    --ac-fs-layout-legend: {
+      @apply(--layout);
+      padding: 10px 30px 10px 15px;
+      font-weight: 400;
+      text-align: center;
+      border-bottom: 1px solid var(--ac-fs-legend-border, --paper-grey-800);
+    };
+    --ac-fs-layout-content: {
+      padding: 10px 15px;
+      font-size: 13px;
+    };
+    --ac-fs-layout-carret: {
+      @apply(--layout);
+      @apply(--layout-end-justified);
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      padding: 7px;
+      cursor: pointer;
+    };
+  }
+  .ac-fs-wrapper{
+    @apply(--ac-fs-layout-main);
+    border-color: var(--ac-fs-legend-border, --paper-grey-800);
+  }
+  .ac-fs-legend{
+    @apply(--ac-fs-layout-legend);
+    color: var(--ac-fs-legend-ink, #fff);
+    background-color: var(--ac-fs-legend-bg, --paper-grey-900);
+    border-color: var(--ac-fs-legend-border, --paper-grey-800);
+  }
+  .ac-fs-content-wrapper{
+    overflow: hidden;
+  }
+  .ac-fs-content{
+    @apply(--ac-fs-layout-content);
+    color: var(--ac-fs-content-color, --paper-grey-700);
+    background: var(--ac-fs-content-bg, --paper-grey-200);
+  }
+  .top-icon{
+    @apply(--ac-fs-layout-carret);
+    color:var(--ac-fs-carret, #fff);
+  }
+  </style>
+  <div class="ac-fs-wrapper">
+    <div class="ac-fs-legend">{{legend}}</div>
+    <template is="dom-if" if="{{accordion}}">
+      <div class="top-icon" on-click="_toggle">
+        <iron-icon icon="{{_icon}}"></iron-icon>
+      </div>
+    </template>
+    <div id="fieldContent" class="ac-fs-content-wrapper">
+      <div class="ac-fs-content">
+        <content></content>
+      </div>
+    </div>
+  </div>
+</template>
+<script type="text/javascript">
+  Polymer({
+    is:"accordion-fieldset",
+    behaviors:[
+      Polymer.NeonAnimationRunnerBehavior
+    ],
+    properties: {
+      legend:{
+        type: String,
+      },
+      accordion: {
+        type: Boolean,
+        value: false,
+      },
+      _opened:{
+        type: Boolean,
+        value: true,
+      },
+      closed: {
+        type: Boolean,
+        value: false,
+      },
+      _icon:{
+        type: String,
+        computed: '_changeIcon(_opened)',
+      },
+      animationConfig:{
+        value : function(){
+          return {
+            'open':{
+              name: 'accordion-animation-open',
+              node: this.$.fieldContent,
+            },
+            'close': {
+              name: 'accordion-animation-close',
+              node: this.$.fieldContent,
+            }
+          }
+        },
+      },
+    },
+    listeners:{
+      'neon-animation-finish' : '_neonAnimationFinished'
+    },
+    _changeIcon: function(opened){
+      if(opened){
+        return 'accordion-fieldset-icons:arrow-drop-up';
+      }
+      else{
+        return 'accordion-fieldset-icons:arrow-drop-down';
+      }
+    },
+    _neonAnimationFinished: function(){
+      if(this._opened){
+        this.$.fieldContent.style.height = '100%';
+        this.$.fieldContent.style.overflow = 'visible';
+      }else{
+        this.$.fieldContent.style.height = '0px';
+        this.$.fieldContent.style.overflow = 'hidden';
+      }
+    },
+    _toggle: function(){
+      if(this._opened){
+        this.playAnimation('close');
+        this._opened = false;
+      }else{
+        this.playAnimation('open');
+        this._opened = true;
+      }
+    },
+    ready: function(){
+      if(this.closed && this.accordion){
+        this._opened = false;
+        this.playAnimation('close');
+      }
+    }
+  });
+</script>
+</dom-module>

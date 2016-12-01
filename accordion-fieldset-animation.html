@@ -1,0 +1,68 @@
+<link rel="import" href="../neon-animation/neon-animation-behavior.html">
+<link rel="import" href="../neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../neon-animation/web-animations.html">
+<dom-module id="accordion-animation-open">
+  <template>
+
+  </template>
+  <script type="text/javascript">
+  Polymer({
+    is: 'accordion-animation-open',
+    behaviors: [
+    Polymer.NeonAnimationBehavior
+    ],
+    configure: function(config) {
+      var node = config.node;
+      this._effect = new KeyframeEffect(node, [
+        {'height': '0' , 'overflow': 'hidden'},
+        {'height': this._getHeight(node) + 'px', 'overflow': 'hidden'},
+      ], this.timingFromConfig(config));
+      return this._effect;
+    },
+    _getHeight: function(node){
+      var height;
+      if(node.clientHeight === 0){
+        node.style.height = '100%';
+        height = node.getBoundingClientRect().height;
+        node.style.height = '0';
+      }else{
+        height = node.getBoundingClientRect().height;
+      }
+      return height;
+    },
+  });
+  </script>
+</dom-module>
+
+<dom-module id="accordion-animation-close">
+  <template>
+
+  </template>
+  <script type="text/javascript">
+  Polymer({
+    is: 'accordion-animation-close',
+    behaviors: [
+    Polymer.NeonAnimationBehavior
+    ],
+    configure: function(config) {
+      var node = config.node;
+      this._effect = new KeyframeEffect(node, [
+        {'height': this._getHeight(node) + 'px', 'overflow': 'hidden'},
+        {'height': '0' , 'overflow': 'hidden'},
+      ], this.timingFromConfig(config));
+      return this._effect;
+    },
+    _getHeight: function(node){
+      var height;
+      if(node.innerHeight === 0){
+        node.style.height = '100%';
+        height = node.getBoundingClientRect().height;
+        node.style.height = '0';
+      }else{
+        height = node.getBoundingClientRect().height;
+      }
+      return height;
+    },
+  });
+  </script>
+</dom-module>
